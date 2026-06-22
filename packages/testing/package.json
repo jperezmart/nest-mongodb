@@ -1,6 +1,6 @@
 {
   "name": "@jperezmart/nest-mongodb-testing",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Testing utilities for @jperezmart/nest-mongodb — spin up an ephemeral MongoDB without external infra.",
   "homepage": "https://github.com/jperezmart/nest-mongodb/tree/main/packages/testing#readme",
   "bugs": {
