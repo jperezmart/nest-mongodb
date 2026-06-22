@@ -1,0 +1,32 @@
+{
+  "name": "backend-example",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Example NestJS REST app — @jperezmart/nest-mongodb with the native driver (forRoot, forFeature, transactions).",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo",
+    "dev": "nest start --watch",
+    "lint": "eslint .",
+    "start": "node dist/main.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@jperezmart/nest-mongodb": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nestjs/platform-express": "catalog:",
+    "mongodb": "catalog:",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:"
+  },
+  "devDependencies": {
+    "@jperezmart/eslint-config": "workspace:*",
+    "@jperezmart/typescript-config": "workspace:*",
+    "@nestjs/cli": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "typescript": "catalog:"
+  }
+}

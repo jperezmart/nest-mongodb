@@ -1,0 +1,29 @@
+{
+  "name": "@jperezmart/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./base": "./base.js",
+    "./prettier": "./prettier.config.js"
+  },
+  "files": [
+    "base.js",
+    "prettier.config.js"
+  ],
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@typescript-eslint/parser": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-import": "catalog:",
+    "eslint-plugin-simple-import-sort": "catalog:",
+    "eslint-plugin-turbo": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "prettier-plugin-packagejson": "catalog:",
+    "prettier-plugin-sort-json": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}

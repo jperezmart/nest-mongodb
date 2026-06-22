@@ -1,0 +1,32 @@
+{
+  "name": "nest-mongodb-monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Monorepo for @jperezmart/nest-mongodb — native MongoDB driver integration for NestJS (REST)",
+  "license": "MIT",
+  "author": "Javier Pérez Martín <javier.perez.martin97@gmail.com>",
+  "type": "module",
+  "scripts": {
+    "build": "turbo run build",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "dev": "turbo run dev",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@jperezmart/eslint-config": "workspace:*",
+    "prettier": "catalog:",
+    "prettier-plugin-packagejson": "catalog:",
+    "prettier-plugin-sort-json": "catalog:",
+    "turbo": "catalog:",
+    "typescript": "catalog:"
+  },
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=9"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "name": "@jperezmart/nest-mongodb-testing",
+  "version": "0.0.0",
+  "description": "Testing utilities for @jperezmart/nest-mongodb — spin up an ephemeral MongoDB without external infra.",
+  "homepage": "https://github.com/jperezmart/nest-mongodb/tree/main/packages/testing#readme",
+  "bugs": {
+    "url": "https://github.com/jperezmart/nest-mongodb/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jperezmart/nest-mongodb.git",
+    "directory": "packages/testing"
+  },
+  "license": "MIT",
+  "author": "Javier Pérez Martín <javier.perez.martin97@gmail.com>",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo",
+    "dev": "tsdown --watch",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "mongodb-memory-server": "catalog:"
+  },
+  "devDependencies": {
+    "@jperezmart/eslint-config": "workspace:*",
+    "@jperezmart/nest-mongodb": "workspace:*",
+    "@jperezmart/typescript-config": "workspace:*",
+    "@nestjs/common": "catalog:",
+    "@nestjs/core": "catalog:",
+    "@nestjs/testing": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "mongodb": "catalog:",
+    "reflect-metadata": "catalog:",
+    "rxjs": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "@jperezmart/nest-mongodb": "workspace:^",
+    "@nestjs/common": "^10.0.0 || ^11.0.0",
+    "mongodb": "^7.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

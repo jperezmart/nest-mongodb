@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  },
+  "exclude": ["dist", "node_modules"],
+  "extends": "@jperezmart/typescript-config/nestjs.json",
+  "include": ["src/**/*.ts"]
+}
