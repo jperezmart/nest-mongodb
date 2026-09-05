@@ -4,3 +4,10 @@ coverage
 .turbo
 pnpm-lock.yaml
 *.tsbuildinfo
+CHANGELOG.md
+
+# CANON — keep this entry. Hole 3 puts `pnpm format` at the end of
+# `changeset:version`, so without it your formatter rewrites a file the standard
+# says is copied verbatim, on every version run, silently. `release.yml` needs no
+# entry: Prettier does not format YAML workflows here.
+.changeset/config.json
