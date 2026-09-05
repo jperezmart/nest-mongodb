@@ -19,7 +19,10 @@ Shared tooling lives in `packages/typescript-config` and
 
 ## Develop
 
-Requires Node 24 LTS and pnpm ≥ 9.
+The toolchain is pinned in `package.json`: Node in `devEngines.runtime` and
+pnpm in `packageManager`. pnpm installs its own pinned version, and a
+mismatched Node fails the install — so those two fields are the floor, and
+there is no version here to keep in step with them.
 
 ```bash
 pnpm install
