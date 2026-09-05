@@ -2,6 +2,27 @@ packages:
   - 'packages/*'
   - 'apps/*'
 
+# Migrated from the repo's .npmrc, which pnpm 11 no longer reads: `pnpm config
+# get auto-install-peers` returned `undefined` after the bump, so all three
+# settings below had gone silently inert and autoInstallPeers had reverted to
+# its default of `true`. That matters here — packages/core and packages/testing
+# keep explicit peer ranges spanning several majors on purpose (see the catalog
+# note below), and auto-installing peers undoes exactly that.
+autoInstallPeers: false
+# Hoist nothing implicitly, to catch missing deps early
+strictPeerDependencies: false
+# Allow workspace packages to be linked
+linkWorkspacePackages: true
+
+# pnpm >= 10 blocks a dependency's build scripts unless it is listed here.
+# mongodb-memory-server's postinstall is only a cache warm-up: it pre-downloads
+# the mongod binary so the first test run does not pay for it. Declining it is
+# safe — the package fetches the binary lazily on first use — and it keeps a
+# ~100 MB network fetch out of the publishing pipeline, whose
+# `pnpm install --frozen-lockfile` needs no mongod at all.
+allowBuilds:
+  mongodb-memory-server: false
+
 # Centralized versions (pnpm catalog). Reference with "catalog:" in package.json.
 # Peer-dependency ranges in packages/core and packages/testing stay explicit on
 # purpose (they intentionally span multiple major versions).
