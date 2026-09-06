@@ -29,25 +29,25 @@ allowBuilds:
 # purpose (they intentionally span multiple major versions).
 catalog:
   # runtime — nest
-  '@nestjs/cli': ^11.0.23
-  '@nestjs/common': ^11.1.27
-  '@nestjs/core': ^11.1.27
-  '@nestjs/platform-express': ^11.1.27
-  '@nestjs/testing': ^11.1.27
+  '@nestjs/cli': ^11.0.24
+  '@nestjs/common': ^11.2.3
+  '@nestjs/core': ^11.2.3
+  '@nestjs/platform-express': ^11.2.3
+  '@nestjs/testing': ^11.2.3
   reflect-metadata: ^0.2.2
   rxjs: ^7.8.2
   express: ^5.1.0
   # runtime — mongodb
-  mongodb: ^7.3.0
+  mongodb: ^7.6.0
   mongodb-memory-server: ^11.2.0
   # build / tooling
-  tsdown: ^0.22.3
-  turbo: ^2.9.18
+  tsdown: ^0.22.14
+  turbo: ^2.10.12
   typescript: ^6.0.3
-  vitest: ^4.1.9
+  vitest: ^4.1.11
   supertest: ^7.2.2
   # types (@types/node tracks the Node major → 24 LTS)
-  '@types/node': ^24.0.0
+  '@types/node': ^24.13.3
   '@types/supertest': ^7.2.0
   # Shared configuration, published from jperezmart/config, replacing the
   # packages/eslint-config and packages/typescript-config this repo vendored.
@@ -60,5 +60,5 @@ catalog:
   '@jperezmart/prettier-config': ^1.0.0
   '@jperezmart/typescript-config': ^1.0.0
   # eslint + prettier
-  eslint: ^10.3.0
-  prettier: ^3.8.3
+  eslint: ^10.9.1
+  prettier: ^3.9.6
