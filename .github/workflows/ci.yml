@@ -28,6 +28,14 @@ jobs:
       # CI does not publish: no id-token, no registry-url.
       - run: pnpm install --frozen-lockfile
 
+      # mongodb-memory-server's postinstall is declined in pnpm-workspace.yaml, to
+      # keep a ~100 MB fetch out of the publishing path that release.yml shares.
+      # That decision needs this step to be safe: turbo runs the two test tasks in
+      # parallel, so without a binary already on disk both race to download the
+      # same one and collide on its lockfile. Here it is fetched once, serially,
+      # and only in CI — release.yml stays lean.
+      - run: pnpm --filter @jperezmart/nest-mongodb exec node node_modules/mongodb-memory-server/postinstall.js
+
       # ↓ your checks. Delete the ones you don't have.
       - run: pnpm build
       - run: pnpm typecheck
