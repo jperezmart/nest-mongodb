@@ -1,5 +1,8 @@
 # @jperezmart/nest-mongodb
 
+[![npm version](https://img.shields.io/npm/v/@jperezmart/nest-mongodb.svg)](https://www.npmjs.com/package/@jperezmart/nest-mongodb)
+[![license](https://img.shields.io/npm/l/@jperezmart/nest-mongodb.svg)](./LICENSE)
+
 Native MongoDB driver integration for NestJS — the same surface as
 [`@nestjs/mongoose`](https://docs.nestjs.com/techniques/mongodb), but using the
 official `mongodb` driver (`MongoClient` / `Db` / `Collection`) instead of an

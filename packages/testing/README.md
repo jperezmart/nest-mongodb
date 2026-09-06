@@ -1,5 +1,8 @@
 # @jperezmart/nest-mongodb-testing
 
+[![npm version](https://img.shields.io/npm/v/@jperezmart/nest-mongodb-testing.svg)](https://www.npmjs.com/package/@jperezmart/nest-mongodb-testing)
+[![license](https://img.shields.io/npm/l/@jperezmart/nest-mongodb-testing.svg)](./LICENSE)
+
 Testing utilities for [`@jperezmart/nest-mongodb`](https://github.com/jperezmart/nest-mongodb/tree/main/packages/core).
 Spin up an ephemeral MongoDB with
 [`mongodb-memory-server`](https://github.com/typegoose/mongodb-memory-server) —
