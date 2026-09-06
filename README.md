@@ -14,8 +14,10 @@ shutdown) but hands you the raw `mongodb` driver objects (`MongoClient`, `Db`,
 | [`@jperezmart/nest-mongodb-testing`](packages/testing) | Ephemeral MongoDB for tests (`mongodb-memory-server`). |
 | [`backend-example`](apps/backend-example)              | Example NestJS REST app exercising the full surface.   |
 
-Shared tooling lives in `packages/typescript-config` and
-`packages/eslint-config`.
+Shared lint, format and tsconfig come from
+[`jperezmart/config`](https://github.com/jperezmart/config) as
+`@jperezmart/eslint-config`, `@jperezmart/prettier-config` and
+`@jperezmart/typescript-config` — three npm packages, not vendored copies.
 
 ## Develop
 

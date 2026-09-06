@@ -1,1 +1,1 @@
-export { default } from '@jperezmart/eslint-config/prettier';
+export { default } from '@jperezmart/prettier-config';

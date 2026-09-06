@@ -9,7 +9,8 @@ packages:
 # keep explicit peer ranges spanning several majors on purpose (see the catalog
 # note below), and auto-installing peers undoes exactly that.
 autoInstallPeers: false
-# Hoist nothing implicitly, to catch missing deps early
+# Report unmet peer ranges as warnings, not install failures: the peer ranges
+# in packages/core and packages/testing intentionally span multiple majors
 strictPeerDependencies: false
 # Allow workspace packages to be linked
 linkWorkspacePackages: true
@@ -48,16 +49,16 @@ catalog:
   # types (@types/node tracks the Node major → 24 LTS)
   '@types/node': ^24.0.0
   '@types/supertest': ^7.2.0
+  # Shared configuration, published from jperezmart/config, replacing the
+  # packages/eslint-config and packages/typescript-config this repo vendored.
+  # The plugins those pinned are gone from the catalog: most are now transitive
+  # dependencies of @jperezmart/eslint-config, and two — eslint-plugin-turbo and
+  # eslint-plugin-import — the published config drops outright. Neither was
+  # doing anything: no turbo/* rule was ever enabled, and
+  # import/no-extraneous-dependencies was already inert on ESLint 10.
+  '@jperezmart/eslint-config': ^1.0.0
+  '@jperezmart/prettier-config': ^1.0.0
+  '@jperezmart/typescript-config': ^1.0.0
   # eslint + prettier
   eslint: ^10.3.0
-  '@eslint/js': ^10.0.1
-  typescript-eslint: ^8.59.2
-  '@typescript-eslint/parser': ^8.59.2
-  eslint-config-prettier: ^10.1.8
-  eslint-plugin-import: ^2.32.0
-  eslint-plugin-simple-import-sort: ^13.0.0
-  eslint-plugin-turbo: ^2.9.12
-  globals: ^17.6.0
   prettier: ^3.8.3
-  prettier-plugin-packagejson: ^3.0.2
-  prettier-plugin-sort-json: ^4.2.0
