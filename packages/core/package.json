@@ -1,6 +1,6 @@
 {
   "name": "@jperezmart/nest-mongodb",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Native MongoDB driver integration for NestJS — @nestjs/mongoose-style API without an ODM. ESM + CJS.",
   "keywords": [
     "nestjs",
