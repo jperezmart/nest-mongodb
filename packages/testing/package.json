@@ -48,9 +48,9 @@
     "mongodb-memory-server": "catalog:"
   },
   "devDependencies": {
-    "@jperezmart/eslint-config": "workspace:*",
+    "@jperezmart/eslint-config": "catalog:",
     "@jperezmart/nest-mongodb": "workspace:*",
-    "@jperezmart/typescript-config": "workspace:*",
+    "@jperezmart/typescript-config": "catalog:",
     "@nestjs/common": "catalog:",
     "@nestjs/core": "catalog:",
     "@nestjs/testing": "catalog:",

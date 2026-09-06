@@ -22,10 +22,9 @@
   "devDependencies": {
     "@changesets/changelog-github": "^1.0.0",
     "@changesets/cli": "^3.0.1",
-    "@jperezmart/eslint-config": "workspace:*",
+    "@jperezmart/prettier-config": "catalog:",
+    "@jperezmart/typescript-config": "catalog:",
     "prettier": "catalog:",
-    "prettier-plugin-packagejson": "catalog:",
-    "prettier-plugin-sort-json": "catalog:",
     "turbo": "catalog:",
     "typescript": "catalog:"
   },
