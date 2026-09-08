@@ -24,6 +24,18 @@ linkWorkspacePackages: true
 allowBuilds:
   mongodb-memory-server: false
 
+# pnpm's supply-chain policy, pinned rather than inherited, and exempting the
+# packages this owner publishes. This block is contract item 10 of
+# jperezmart/package-template, copied verbatim and not tailored per repo; the
+# README there carries the four things the keys do not say for themselves.
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExcludePrune: true
+minimumReleaseAgeExclude:
+  - '@jperezmart/*'
+  - ts-devtools-plugin-radix-themes
+  - tw-preset-radix
+
 # Centralized versions (pnpm catalog). Reference with "catalog:" in package.json.
 # Peer-dependency ranges in packages/core and packages/testing stay explicit on
 # purpose (they intentionally span multiple major versions).
