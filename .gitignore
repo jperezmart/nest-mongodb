@@ -8,3 +8,7 @@ coverage/
 .env
 .env.*
 !.env.example
+
+# claude code (local only)
+.claude/worktrees/
+.claude/settings.local.json
