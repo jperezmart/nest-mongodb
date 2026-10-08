@@ -11,3 +11,8 @@ CHANGELOG.md
 # says is copied verbatim, on every version run, silently. `release.yml` needs no
 # entry: Prettier does not format YAML workflows here.
 .changeset/config.json
+
+# Agent skills vendored from mattpocock/skills and pinned by hash in
+# skills-lock.json: formatting them would drift from the recorded hashes.
+.agents
+skills-lock.json
