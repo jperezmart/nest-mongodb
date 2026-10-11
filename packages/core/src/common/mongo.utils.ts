@@ -33,6 +33,16 @@ export function getDbToken(connectionName?: string): string {
     : `${connectionName}Connection`;
 }
 
+/**
+ * Token for the `MongoTransactionService` of a connection. On the default
+ * connection the service is also injectable by its class.
+ */
+export function getTransactionServiceToken(connectionName?: string): string {
+  return isDefaultConnection(connectionName)
+    ? 'DatabaseTransactionService'
+    : `${connectionName}TransactionService`;
+}
+
 /** Token for a `Collection` (≈ `getModelToken('Cat')` → `'CatCollection'`). */
 export function getCollectionToken(
   name: string,

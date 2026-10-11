@@ -3,11 +3,13 @@ export {
   getClientToken,
   getCollectionToken,
   getDbToken,
+  getTransactionServiceToken,
 } from './common/mongo.utils.js';
 export {
   InjectClient,
   InjectCollection,
   InjectDb,
+  InjectTransactionService,
 } from './decorators/index.js';
 export type {
   AsyncCollectionFactory,

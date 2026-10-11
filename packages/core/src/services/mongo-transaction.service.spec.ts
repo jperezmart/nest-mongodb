@@ -1,10 +1,16 @@
 import type { INestApplication } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { Collection, MongoClient } from 'mongodb';
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
-import { getClientToken, getCollectionToken } from '../common/mongo.utils.js';
+import {
+  getClientToken,
+  getCollectionToken,
+  getTransactionServiceToken,
+} from '../common/mongo.utils.js';
+import { InjectTransactionService } from '../decorators/index.js';
 import { MongoModule } from '../mongo.module.js';
 import { MongoTransactionService } from './mongo-transaction.service.js';
 
@@ -116,5 +122,87 @@ describe('MongoTransactionService', () => {
     expect(attempts).toBe(2);
     // Committed exactly once: 25 from the first test + 10, not + 20.
     expect((await accounts.findOne({ _id: 'b' }))?.balance).toBe(35);
+  });
+});
+
+interface Event {
+  _id: string;
+}
+
+@Injectable()
+class AnalyticsWriter {
+  constructor(
+    @InjectTransactionService('analytics')
+    readonly tx: MongoTransactionService,
+  ) {}
+}
+
+describe('MongoTransactionService on a named connection', () => {
+  let primary: MongoMemoryReplSet;
+  let analytics: MongoMemoryReplSet;
+  let app: INestApplication;
+
+  beforeAll(async () => {
+    [primary, analytics] = await Promise.all([
+      MongoMemoryReplSet.create({ replSet: { count: 1 } }),
+      MongoMemoryReplSet.create({ replSet: { count: 1 } }),
+    ]);
+    const moduleRef = await Test.createTestingModule({
+      imports: [
+        MongoModule.forRoot(primary.getUri(), { dbName: 'app' }),
+        MongoModule.forRoot(analytics.getUri(), {
+          dbName: 'metrics',
+          connectionName: 'analytics',
+        }),
+        MongoModule.forFeature(['events']),
+        MongoModule.forFeature(['events'], 'analytics'),
+      ],
+      providers: [AnalyticsWriter],
+    }).compile();
+    app = moduleRef.createNestApplication();
+    await app.init();
+  });
+
+  afterAll(async () => {
+    await app.close();
+    await Promise.all([primary.stop(), analytics.stop()]);
+  });
+
+  it('commits one transaction on each connection, each on its own client', async () => {
+    const defaultTx = app.get(MongoTransactionService);
+    const analyticsTx = app.get<MongoTransactionService>(
+      getTransactionServiceToken('analytics'),
+    );
+    const defaultEvents = app.get<Collection<Event>>(
+      getCollectionToken('events'),
+    );
+    const analyticsEvents = app.get<Collection<Event>>(
+      getCollectionToken('events', 'analytics'),
+    );
+
+    // The driver rejects a session used with another client's collection, so
+    // each session must belong to its own connection's client.
+    const otherClient = /same MongoClient/;
+    await defaultTx.withTransaction(async session => {
+      await expect(
+        analyticsEvents.insertOne({ _id: 'cross' }, { session }),
+      ).rejects.toThrow(otherClient);
+      await defaultEvents.insertOne({ _id: 'on-default' }, { session });
+    });
+    await analyticsTx.withTransaction(async session => {
+      await expect(
+        defaultEvents.insertOne({ _id: 'cross' }, { session }),
+      ).rejects.toThrow(otherClient);
+      await analyticsEvents.insertOne({ _id: 'on-analytics' }, { session });
+    });
+
+    expect(await defaultEvents.distinct('_id')).toEqual(['on-default']);
+    expect(await analyticsEvents.distinct('_id')).toEqual(['on-analytics']);
+  });
+
+  it('injects the named connection service with @InjectTransactionService', () => {
+    expect(app.get(AnalyticsWriter).tx).toBe(
+      app.get(getTransactionServiceToken('analytics')),
+    );
   });
 });

@@ -6,8 +6,6 @@ import type {
   TransactionOptions,
 } from 'mongodb';
 
-import { InjectClient } from '../decorators/inject-client.decorator.js';
-
 /** Options accepted by {@link MongoTransactionService.withTransaction}. */
 export interface WithTransactionOptions {
   /** Options for the underlying `client.startSession`. */
@@ -23,14 +21,15 @@ export interface WithTransactionOptions {
  * `withTransaction` already handles commit/abort and retries, so this is the
  * recommended way to run a transaction.
  *
- * Bound to the default connection. For a named connection, inject its client
- * with `@InjectClient(name)` and call `startSession()` yourself.
+ * Every connection has its own instance, bound to that connection's client.
+ * Inject the default one by class, and a named one with
+ * `@InjectTransactionService(name)` (token: `getTransactionServiceToken(name)`).
  *
  * @remarks Transactions require a replica set (or `mongos`).
  */
 @Injectable()
 export class MongoTransactionService {
-  constructor(@InjectClient() private readonly client: MongoClient) {}
+  constructor(private readonly client: MongoClient) {}
 
   /**
    * Runs `fn` inside a transaction, committing on success and aborting on a
