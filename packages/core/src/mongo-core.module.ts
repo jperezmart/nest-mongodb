@@ -8,14 +8,18 @@ import { Global, Inject, Module } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
 import type { Db, MongoClient } from 'mongodb';
 
-import { getClientToken, getDbToken } from './common/mongo.utils.js';
+import {
+  getClientToken,
+  getDbToken,
+  getTransactionServiceToken,
+  isDefaultConnection,
+} from './common/mongo.utils.js';
 import type {
   MongoModuleAsyncOptions,
   MongoModuleOptions,
   MongoOptionsFactory,
 } from './interfaces/mongo-options.interface.js';
 import {
-  DEFAULT_DB_CONNECTION,
   MONGO_CONNECTION_NAME,
   MONGO_MODULE_OPTIONS,
 } from './mongo.constants.js';
@@ -91,12 +95,22 @@ export class MongoCoreModule implements OnApplicationShutdown {
       inject: [clientToken, MONGO_MODULE_OPTIONS],
     };
 
-    // The transaction service injects the default client, so it is only
-    // registered for the default connection. Named connections use
-    // `@InjectClient(name)` + `startSession()`.
-    const isDefault =
-      connectionName === undefined || connectionName === DEFAULT_DB_CONNECTION;
-    const txProviders: Provider[] = isDefault ? [MongoTransactionService] : [];
+    // Every connection gets its own transaction service, bound to its client.
+    // The default one is also registered under its class, so it stays
+    // injectable without a decorator.
+    const txToken = getTransactionServiceToken(connectionName);
+    const txProvider: Provider = {
+      provide: txToken,
+      useFactory: (client: MongoClient) => new MongoTransactionService(client),
+      inject: [clientToken],
+    };
+    const txClassTokens = isDefaultConnection(connectionName)
+      ? [MongoTransactionService]
+      : [];
+    const txClassProviders: Provider[] = txClassTokens.map(provide => ({
+      provide,
+      useExisting: txToken,
+    }));
 
     return {
       module: MongoCoreModule,
@@ -106,9 +120,10 @@ export class MongoCoreModule implements OnApplicationShutdown {
         connectionNameProvider,
         clientProvider,
         dbProvider,
-        ...txProviders,
+        txProvider,
+        ...txClassProviders,
       ],
-      exports: [clientToken, dbToken, ...txProviders],
+      exports: [clientToken, dbToken, txToken, ...txClassTokens],
     };
   }
 
