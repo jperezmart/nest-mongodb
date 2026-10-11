@@ -6,14 +6,10 @@ import type {
 } from '@nestjs/common';
 import { Global, Inject, Module } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import type { Db } from 'mongodb';
-import { MongoClient } from 'mongodb';
+import type { Db, MongoClient } from 'mongodb';
 
-import {
-  connectWithRetry,
-  getClientToken,
-  getDbToken,
-} from './common/mongo.utils.js';
+import { getClientToken, getDbToken } from './common/mongo.utils.js';
+import { openConnection } from './connection-opener.js';
 import type {
   MongoModuleAsyncOptions,
   MongoModuleOptions,
@@ -27,9 +23,9 @@ import {
 import { MongoTransactionService } from './services/mongo-transaction.service.js';
 
 /**
- * Internal module that owns a connection's lifecycle — creating and connecting
- * the {@link MongoClient} (with retries), exposing its {@link Db}, and closing
- * the client on shutdown. Mirrors `@nestjs/mongoose`'s `MongooseCoreModule`.
+ * Internal module that wires a connection into DI — the {@link MongoClient}
+ * (opened by {@link openConnection}) and its {@link Db} — and closes the
+ * client on shutdown. Mirrors `@nestjs/mongoose`'s `MongooseCoreModule`.
  */
 @Global()
 @Module({})
@@ -84,7 +80,7 @@ export class MongoCoreModule implements OnApplicationShutdown {
     const clientProvider: Provider = {
       provide: clientToken,
       useFactory: (opts: MongoModuleOptions): Promise<MongoClient> =>
-        MongoCoreModule.createClient(opts, dbToken),
+        openConnection(opts, dbToken),
       inject: [MONGO_MODULE_OPTIONS],
     };
 
@@ -114,53 +110,6 @@ export class MongoCoreModule implements OnApplicationShutdown {
       ],
       exports: [clientToken, dbToken, ...txProviders],
     };
-  }
-
-  /** Creates and connects the client, applying retry/factory/error hooks. */
-  private static async createClient(
-    options: MongoModuleOptions,
-    name: string,
-  ): Promise<MongoClient> {
-    const {
-      uri,
-      dbName: _dbName,
-      connectionName: _connectionName,
-      retryAttempts,
-      retryDelay,
-      verboseRetryLog,
-      connectionFactory,
-      connectionErrorFactory,
-      lazyConnection,
-      onConnectionCreate,
-      ...clientOptions
-    } = options;
-
-    if (!uri) {
-      throw new Error('MongoModule: a connection `uri` is required.');
-    }
-
-    const wrap =
-      connectionFactory ?? ((client: MongoClient): MongoClient => client);
-    const toError = connectionErrorFactory ?? ((error: Error): Error => error);
-
-    try {
-      return await connectWithRetry(
-        async () => {
-          const client = new MongoClient(uri, clientOptions);
-          onConnectionCreate?.(client);
-          if (lazyConnection) {
-            return wrap(client, name);
-          }
-          await client.connect();
-          return wrap(client, name);
-        },
-        retryAttempts,
-        retryDelay,
-        verboseRetryLog,
-      );
-    } catch (error) {
-      throw toError(error as Error);
-    }
   }
 
   private static createAsyncProviders(
