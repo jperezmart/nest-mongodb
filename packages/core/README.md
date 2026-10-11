@@ -195,9 +195,32 @@ constructor(
 ) {}
 ```
 
-`MongoTransactionService` is bound to the default connection. For a named
-connection, inject its client with `@InjectClient(name)` and call
-`startSession()` yourself.
+Each connection has its own `MongoTransactionService`, bound to its client.
+Inject the default one by class, as above, and a named one with
+`@InjectTransactionService(name)`:
+
+```ts
+import {
+  InjectTransactionService,
+  MongoTransactionService,
+} from '@jperezmart/nest-mongodb';
+
+constructor(
+  @InjectCollection('events', 'analytics')
+  private readonly events: Collection<Event>,
+  @InjectTransactionService('analytics')
+  private readonly analyticsTx: MongoTransactionService,
+) {}
+
+record(event: Event) {
+  return this.analyticsTx.withTransaction(session =>
+    this.events.insertOne(event, { session }),
+  );
+}
+```
+
+Outside a constructor (for example `app.get` or `moduleRef.get`), resolve it
+with `getTransactionServiceToken(name)`.
 
 ## License
 
