@@ -9,7 +9,6 @@ import { ModuleRef } from '@nestjs/core';
 import type { Db, MongoClient } from 'mongodb';
 
 import { getClientToken, getDbToken } from './common/mongo.utils.js';
-import { openConnection } from './connection-opener.js';
 import type {
   MongoModuleAsyncOptions,
   MongoModuleOptions,
@@ -20,6 +19,7 @@ import {
   MONGO_CONNECTION_NAME,
   MONGO_MODULE_OPTIONS,
 } from './mongo.constants.js';
+import { openConnection } from './mongo-connection-opener.js';
 import { MongoTransactionService } from './services/mongo-transaction.service.js';
 
 /**

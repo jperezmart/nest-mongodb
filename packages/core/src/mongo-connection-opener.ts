@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
 import { MongoClient } from 'mongodb';
 
+import { retryConnection } from './common/mongo-connection-retry.js';
 import type { MongoModuleOptions } from './interfaces/mongo-options.interface.js';
 
 /**
@@ -23,11 +23,6 @@ import type { MongoModuleOptions } from './interfaces/mongo-options.interface.js
  *   connection token.
  */
 
-const logger = new Logger('MongoModule');
-
-const sleep = (ms: number): Promise<void> =>
-  new Promise(resolve => setTimeout(resolve, ms));
-
 /**
  * Open a connection described by the module `options`. `token` is the
  * connection's token, handed to `connectionFactory`.
@@ -40,9 +35,9 @@ export async function openConnection(
     uri,
     dbName: _dbName,
     connectionName: _connectionName,
-    retryAttempts,
-    retryDelay,
-    verboseRetryLog,
+    retryAttempts: _retryAttempts,
+    retryDelay: _retryDelay,
+    verboseRetryLog: _verboseRetryLog,
     connectionFactory,
     connectionErrorFactory,
     lazyConnection,
@@ -71,40 +66,10 @@ export async function openConnection(
   };
 
   try {
-    return await retry(attempt, retryAttempts, retryDelay, verboseRetryLog);
+    return await retryConnection(attempt, options);
   } catch (error) {
     throw connectionErrorFactory
       ? connectionErrorFactory(error as Error)
       : error;
   }
-}
-
-/**
- * Call `attempt()` and, on failure, retry up to `retryAttempts` times waiting
- * `retryDelay` ms between attempts. The final failure is rethrown.
- */
-export async function retry<T>(
-  attempt: () => Promise<T>,
-  retryAttempts = 9,
-  retryDelay = 3000,
-  verboseRetryLog = false,
-): Promise<T> {
-  let lastError: unknown;
-  for (let n = 0; n <= retryAttempts; n++) {
-    try {
-      return await attempt();
-    } catch (error) {
-      lastError = error;
-      if (n >= retryAttempts) break;
-      const message = `Unable to connect to the database. Retrying (${n + 1})...`;
-      if (verboseRetryLog) {
-        const reason = error instanceof Error ? error.stack : String(error);
-        logger.error(`${message} ${reason}`);
-      } else {
-        logger.error(message);
-      }
-      await sleep(retryDelay);
-    }
-  }
-  throw lastError;
 }
