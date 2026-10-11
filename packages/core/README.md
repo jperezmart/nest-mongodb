@@ -49,7 +49,12 @@ newest 7.x. Nest 10 is not supported; use `0.1.x` if you are still on it.
 Option names and defaults mirror `@nestjs/mongoose`: `retryAttempts` (default
 `9`), `retryDelay` (default `3000` ms), `connectionName`, `connectionFactory`,
 `connectionErrorFactory`, `lazyConnection`, `onConnectionCreate`,
-`verboseRetryLog`, plus `dbName` and any `MongoClientOptions` inline.
+`verboseRetryLog`, plus `dbName` and any `MongoClientOptions` inline. A failed
+attempt's client is closed before the next retry. Two deliberate differences:
+`onConnectionCreate` is also called when `lazyConnection` is set (upstream
+skips it), and `connectionFactory` receives the connection's token (its `Db`
+token, see `getDbToken`) as its second argument, the same as upstream passes
+the connection token.
 
 ## Usage
 
