@@ -2,8 +2,8 @@ import type { MongoClient } from 'mongodb';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
-import { openConnection } from './connection-opener.js';
 import type { MongoModuleOptions } from './interfaces/mongo-options.interface.js';
+import { openConnection } from './mongo-connection-opener.js';
 
 /** Nothing listens on port 1, so every attempt fails fast. */
 const UNREACHABLE_URI = 'mongodb://127.0.0.1:1/?serverSelectionTimeoutMS=100';
