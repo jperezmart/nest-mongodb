@@ -24,6 +24,17 @@ pnpm add @jperezmart/nest-mongodb mongodb
 `@nestjs/common`, `@nestjs/core`, `reflect-metadata` and `rxjs` are peer
 dependencies (you already have them in a Nest app).
 
+### Compatibility
+
+| Dependency                       | Supported                               |
+| -------------------------------- | --------------------------------------- |
+| Node                             | `>=20.19.0`                             |
+| `@nestjs/common`, `@nestjs/core` | `^11.0.0 \|\| ^12.0.0` (Nest 11 and 12) |
+| `mongodb`                        | `^7.0.0`                                |
+
+CI runs the test suite against Nest 11 and 12, each with `mongodb` 7.0 and the
+newest 7.x. Nest 10 is not supported; use `0.1.x` if you are still on it.
+
 ## API at a glance (vs `@nestjs/mongoose`)
 
 | `@nestjs/mongoose`                  | `@jperezmart/nest-mongodb`                   |

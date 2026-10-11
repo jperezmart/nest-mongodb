@@ -14,6 +14,12 @@ no external infra — and wire it into your Nest test module.
 pnpm add -D @jperezmart/nest-mongodb-testing
 ```
 
+Same compatibility as
+[`@jperezmart/nest-mongodb`](https://github.com/jperezmart/nest-mongodb/tree/main/packages/core#compatibility):
+Node `>=20.19.0`, `@nestjs/common` `^11.0.0 || ^12.0.0` (Nest 11 and 12) and
+`mongodb` `^7.0.0`. Nest 10 is not supported; use `0.1.x` if you are still on
+it.
+
 ## `MongoTestModule.forRoot(options?)`
 
 Boots an in-memory server and configures `MongoModule.forRoot` against it. The
