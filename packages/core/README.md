@@ -158,6 +158,26 @@ export class BankService {
 }
 ```
 
+**The callback may run more than once.** On a transient error (a write
+conflict, a primary step-down) the driver aborts and re-runs the whole
+callback, so it must be idempotent: do all work through `session` and keep
+other side effects out of it. Don't do this:
+
+```ts
+return this.tx.withTransaction(async session => {
+  await this.accounts.updateOne(
+    { _id: from },
+    { $inc: { balance: -amount } },
+    { session },
+  );
+  this.transfersCount++; // counted again on every retry
+  await this.mailer.send(from, 'Transfer sent'); // sent again on every retry
+});
+```
+
+Run such side effects after `withTransaction` resolves, once the transaction
+has committed.
+
 ### Multiple connections
 
 ```ts
