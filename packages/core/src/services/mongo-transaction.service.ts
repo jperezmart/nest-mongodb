@@ -35,6 +35,13 @@ export class MongoTransactionService {
   /**
    * Runs `fn` inside a transaction, committing on success and aborting on a
    * thrown error (the error is rethrown). The session is always ended.
+   *
+   * **`fn` may run more than once.** The driver's `session.withTransaction`
+   * retries the whole callback on a `TransientTransactionError` (and retries
+   * the commit on `UnknownTransactionCommitResult`), so `fn` must be
+   * idempotent: do all work through `session`, and keep side effects outside
+   * it (HTTP calls, emitted events, mutated in-memory state) out of `fn` —
+   * run them after `withTransaction` resolves.
    */
   async withTransaction<T>(
     fn: (session: ClientSession) => Promise<T>,
