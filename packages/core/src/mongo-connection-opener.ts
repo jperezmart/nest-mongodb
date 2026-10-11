@@ -12,8 +12,9 @@ import type { MongoModuleOptions } from './interfaces/mongo-options.interface.js
  * `connectionErrorFactory`.
  *
  * Unlike `@nestjs/mongoose`, a failed attempt closes its client before the
- * delay and the next attempt, so an unreachable server does not leak one
- * client (with its monitoring and timers) per attempt.
+ * delay and the next attempt, so a client that connected and then failed (for
+ * example in a throwing `connectionFactory`) is not left open with its
+ * monitoring and timers.
  *
  * Deliberate differences from `@nestjs/mongoose`:
  * - `onConnectionCreate` is also called when `lazyConnection` is set;
