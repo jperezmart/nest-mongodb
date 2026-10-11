@@ -1,6 +1,6 @@
-import { Logger } from '@nestjs/common';
 import type { MongoClient } from 'mongodb';
 
+import { retry } from '../connection-opener.js';
 import { DEFAULT_DB_CONNECTION } from '../mongo.constants.js';
 
 /**
@@ -36,16 +36,16 @@ export function getCollectionToken(
   return `${getDbToken(connectionName)}/${name}Collection`;
 }
 
-const logger = new Logger('MongoModule');
-
-const sleep = (ms: number): Promise<void> =>
-  new Promise(resolve => setTimeout(resolve, ms));
-
 /**
  * Establish the connection with retries — the async/await analogue of
  * `@nestjs/mongoose`'s RxJS `handleRetry`. Calls `factory()` and, on failure,
  * retries up to `retryAttempts` times waiting `retryDelay` ms between attempts.
  * The final attempt rethrows so module initialization fails loudly.
+ *
+ * @deprecated Configure retries through the module options instead
+ * (`retryAttempts`, `retryDelay`, `verboseRetryLog` on `MongoModule.forRoot`
+ * / `forRootAsync`). This helper does not close a failed client before
+ * retrying, and will be removed in a future major release.
  */
 export async function connectWithRetry(
   factory: () => Promise<MongoClient>,
@@ -53,22 +53,5 @@ export async function connectWithRetry(
   retryDelay = 3000,
   verboseRetryLog = false,
 ): Promise<MongoClient> {
-  let lastError: unknown;
-  for (let attempt = 0; attempt <= retryAttempts; attempt++) {
-    try {
-      return await factory();
-    } catch (error) {
-      lastError = error;
-      if (attempt >= retryAttempts) break;
-      const message = `Unable to connect to the database. Retrying (${attempt + 1})...`;
-      if (verboseRetryLog) {
-        const reason = error instanceof Error ? error.stack : String(error);
-        logger.error(`${message} ${reason}`);
-      } else {
-        logger.error(message);
-      }
-      await sleep(retryDelay);
-    }
-  }
-  throw lastError;
+  return retry(factory, retryAttempts, retryDelay, verboseRetryLog);
 }
