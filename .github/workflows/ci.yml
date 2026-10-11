@@ -14,7 +14,17 @@ permissions:
 
 jobs:
   verify:
+    # The @nestjs/* and mongodb peer ranges of packages/core and
+    # packages/testing are exactly what this matrix tests. Change one only
+    # together with the other.
+    name: verify (nest ${{ matrix.nest }}, mongodb ${{ matrix.mongodb }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nest: ['^11.0.0', '^12.0.0']
+        # The floor of the mongodb peer range, and the newest 7.x.
+        mongodb: ['~7.0.0', '^7.0.0']
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -26,7 +36,24 @@ jobs:
           cache: pnpm
 
       # CI does not publish: no id-token, no registry-url.
+      # The committed lockfile is checked as-is first, then re-resolved below.
       - run: pnpm install --frozen-lockfile
+
+      # Point the catalog at this matrix cell. Every workspace package takes
+      # these through `catalog:`, so one edit moves the packages, their tests
+      # and the example app together. `pnpm update` (not `install`) so the
+      # newest version in the range wins over the one in the lockfile.
+      - name: Pin the catalog to this matrix cell
+        env:
+          NEST: ${{ matrix.nest }}
+          MONGODB: ${{ matrix.mongodb }}
+        run: |
+          perl -pi -e '
+            s/^(\s*.\@nestjs\/(?:common|core|platform-express|testing).:).*/$1 $ENV{NEST}/;
+            s/^(\s*mongodb:).*/$1 $ENV{MONGODB}/;
+          ' pnpm-workspace.yaml
+          pnpm update -r mongodb @nestjs/common @nestjs/core @nestjs/platform-express @nestjs/testing
+          pnpm ls -r --depth 0 @nestjs/common @nestjs/core mongodb
 
       # mongodb-memory-server's postinstall is declined in pnpm-workspace.yaml, to
       # keep a ~100 MB fetch out of the publishing path that release.yml shares.
